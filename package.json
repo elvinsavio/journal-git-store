@@ -1,0 +1,17 @@
+{
+  "name": "git-todo-store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "npx @tailwindcss/cli -i ./src/static/css/input.css -o ./src/static/css/dist.css --watch",
+    "build": "npx @tailwindcss/cli -i ./src/static/css/input.css -o ./src/static/css/dist.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.16",
+    "tailwindcss": "^4.1.16"
+  }
+}
