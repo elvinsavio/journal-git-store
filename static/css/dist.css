@@ -159,6 +159,9 @@
   }
 }
 @layer utilities {
+  .static {
+    position: static;
+  }
   .block {
     display: block;
   }
