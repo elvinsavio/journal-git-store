@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="color-scheme: dark;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} TODOie</title>
+    <title>{% block title %}{% endblock %} | TODOie</title>
     <link rel="stylesheet" href="css/dist.css">
+    <script defer src="js/htmx.js"></script>
+    {% block script %}{% endblock %}
 
 </head>
-<body>
+<body class="bg-background text-foreground">
 
     {% block content %}
     {% endblock %}

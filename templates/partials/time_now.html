@@ -1,0 +1,16 @@
+<a href="/calendar" class="text-xs" id="time-now"></a>
+
+<script>
+function showCurrentTime() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString(); // Example: "14:35:22"
+  const dateString = now.toLocaleDateString(); // Example: "9/14/2024"
+  document.getElementById('time-now').textContent = timeString + ' | ' + dateString;
+}
+
+// Run immediately
+showCurrentTime();
+
+// Update every second
+setInterval(showCurrentTime, 1000);
+</script>

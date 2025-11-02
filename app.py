@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask
+from core.router import router
 import os
 
 template_dir = os.path.abspath("templates")
@@ -8,7 +9,8 @@ app = Flask(
     __name__, template_folder=template_dir, static_url_path="", static_folder=static_dir
 )
 
+if __debug__:
+    app.config['TEMPLATES_AUTO_RELOAD'] = True  
 
-@app.route("/")
-def home():
-    return render_template("login.html")
+
+app.register_blueprint(router)
