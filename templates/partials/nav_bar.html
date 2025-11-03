@@ -3,7 +3,7 @@
     <nav>
       <ul id="nav-bar" class="flex gap-4">
         <li><a id="home" href="/" class="text-gray-700 hover:underline">Home</a></li>
-        <li><a id="todo" href="/todo" class="text-gray-700 hover:underline">Todo</a></li>
+        <li><a id="todo" href="" class="text-gray-700 hover:underline">Todo</a></li>
         <li><a id="goals" href="/goals" class="text-gray-700 hover:underline">Goals</a></li>
       </ul>
     </nav>
@@ -21,4 +21,8 @@
       link.classList.add('font-semibold', 'text-blue-600');
     }
   });
+
+  const todoLink = document.getElementById('todo');
+  const today_date = new Date().toISOString().split('T')[0];
+  todoLink.href = `/todo?_t=${today_date}`;
 </script>

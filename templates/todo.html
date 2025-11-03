@@ -2,8 +2,66 @@
 
 {% block title %}Todo{% endblock %}
 
+{% block script %}
+<script>
+let draggedEl = null;
+
+function handleDragStart(event) {
+    // make sure the handle's parent is the draggable target
+    draggedEl = event.currentTarget.closest("[data-id]");
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", draggedEl.dataset.id);
+    draggedEl.classList.add("opacity-50");
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+    const target = event.currentTarget;
+    if (!target || target === draggedEl) return;
+
+    const container = document.querySelector("#todo-container");
+    const rect = target.getBoundingClientRect();
+    const offset = event.clientY - rect.top;
+    const shouldInsertBefore = offset < rect.height / 2;
+
+    if (shouldInsertBefore) {
+        container.insertBefore(draggedEl, target);
+    } else {
+        container.insertBefore(draggedEl, target.nextSibling);
+    }
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    if (!draggedEl) return;
+    draggedEl.classList.remove("opacity-50");
+
+    const order = Array.from(document.querySelectorAll("#todo-container [data-id]"))
+        .map(el => el.dataset.id);
+
+    htmx.ajax('POST', '/todo/reorder', {
+        values: { order: JSON.stringify(order) }
+    });
+
+    draggedEl = null;
+}
+</script>
+{% endblock %}
+
 {% block content %}
     {% include "partials/nav_bar.html" %}
-    {% include "partials/time_now.html" %}
 
+    <section class="max-w-4xl mx-auto">
+        <h1 class="text-xl font-bold mb-4">Todo List for {{ date }}</h1>
+        <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="beforeend">
+            <input type="hidden" name="date" value="{{ date }}">
+            <input name="title" >
+            <button type="submit" class="mb-4 px-4 py-2">Add</button>
+        </form>
+        <div id="todo-container">
+        {% for todo in todos %}
+            {% include "partials/todo_item.html" %}
+        {% endfor %}
+        </div>
+    </section>  
 {% endblock %}

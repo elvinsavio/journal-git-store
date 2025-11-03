@@ -9,3 +9,8 @@ wheels/
 # Virtual environments
 .venv
 node_modules
+
+
+# test files
+.pytest_cache/
+.coverage

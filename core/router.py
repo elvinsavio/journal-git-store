@@ -1,3 +1,4 @@
+from .model import Todo
 from flask import Blueprint, config, request, redirect, render_template, Response
 from config import Config
 from .decorators import is_logged_in
@@ -33,10 +34,32 @@ def login():
         return render_template("login.html")
     raise NotImplementedError("Login logic not implemented yet.")
 
-@router.route("/todo", methods=["GET"])
+@router.route("/todo", methods=["GET", "POST", "PUT", "DELETE"])
 @is_logged_in
 def todo():
-    return render_template("todo.html")
+    if request.method == "GET":
+        date = request.args.get("_t")
+        
+        if not date:
+            return redirect("/")
+        
+        today_todos = Todo().get_todos_by_date(date)
+
+        return render_template("todo.html", todos=today_todos, date=date)
+    if request.method == "POST":
+        title = request.form.get("title")
+        date = request.form.get("date")
+        if not title or not date:
+            return Response("Missing title or date", status=400)
+        data = {
+            "title": title,
+            "status": "pending",
+            "last_edited": "-",
+        }
+        Todo().add_todo(date, data)
+        resp = Response("ok")
+        return resp
+    raise NotImplementedError("Todo logic not implemented yet.")
 
 @router.route("/goals", methods=["GET"])
 @is_logged_in
