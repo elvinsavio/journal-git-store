@@ -1,9 +1,11 @@
 import enum
-import os
 import json
+import os
 from datetime import datetime
 from typing import Optional
+
 from pytz import timezone
+
 from config import Config
 
 
@@ -15,6 +17,7 @@ def _get_current_datetime() -> str:
 def _get_current_date() -> str:
     tz = timezone(Config.TIMEZONE)
     return datetime.now(tz).strftime("%d-%m-%Y")
+
 
 class Status(enum.Enum):
     PENDING = "pending"
@@ -62,9 +65,10 @@ class Entry:
         entry.date_created = data["date_created"]
         entry.log = data["log"]
         return entry
-    
+
     def __repr__(self):
         return f"Entry<title={self.title}, status={self.status.value}>"
+
 
 class Todo:
     def __init__(self, path: str = "../data/todo.json", date: Optional[str] = None):
@@ -127,18 +131,18 @@ class Todo:
             raise IndexError("Task index out of range")
 
         task = self.data[index]
-        
+
         if title:
             task.update_title(title)
             self.__bulk_write_date(self.date, self.data)
-            return 
-        
+            return
+
         if status:
             task.update_status(status)
             self.__bulk_write_date(self.date, self.data)
             return
 
-        raise ValueError("Either status or title is required") 
+        raise ValueError("Either status or title is required")
 
     def reorder(self, from_index: int, to_index: int) -> None:
         """Reorder a task from one index to another, matching test expectation."""
@@ -147,10 +151,11 @@ class Todo:
         if to_index < 0 or to_index >= len(self.data):
             raise IndexError("To index out of range")
 
-        self.data[from_index], self.data[to_index] = self.data[to_index], self.data[from_index]
+        self.data[from_index], self.data[to_index] = (
+            self.data[to_index],
+            self.data[from_index],
+        )
         self.__bulk_write_date(self.date, self.data)
-
-        
 
     def __len__(self) -> int:
         return len(self.data)

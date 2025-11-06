@@ -1,6 +1,8 @@
-from flask import Flask
-from core.router import router
 import os
+
+from flask import Flask
+
+from core.router import router
 
 template_dir = os.path.abspath("templates")
 static_dir = os.path.abspath("static")
@@ -10,7 +12,7 @@ app = Flask(
 )
 
 if __debug__:
-    app.config['TEMPLATES_AUTO_RELOAD'] = True  
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 
 app.register_blueprint(router)

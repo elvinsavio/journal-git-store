@@ -1,6 +1,9 @@
-from flask import redirect, request, Response
-from config import Config
 from functools import wraps
+
+from flask import Response, redirect, request
+
+from config import Config
+
 
 def is_logged_in(func):
     @wraps(func)
@@ -16,7 +19,11 @@ def is_logged_in(func):
             return redirect("/login")
 
         if not login_key or login_key != Config.HASHED_LOGIN_KEY:
-            return __redirect_to_login_htmx() if is_htmx_request else __redirect_to_login_normal()
+            return (
+                __redirect_to_login_htmx()
+                if is_htmx_request
+                else __redirect_to_login_normal()
+            )
 
         return func(*args, **kwargs)
 

@@ -1,9 +1,10 @@
 import os
 
-from pytest import fixture
 import pytest
+from pytest import fixture
 
-from core.model import Todo, Entry, Status
+from core.model import Entry, Status, Todo
+
 
 def test_entry_init():
     title = "Test Task"
@@ -15,12 +16,14 @@ def test_entry_init():
     assert len(entry.log) == 1
     assert entry.log[0].startswith("Task created on ")
 
+
 def test_entry_update_status():
     entry = Entry("Test Task")
     entry.update_status(Status.COMPLETED)
     assert entry.status == Status.COMPLETED
     assert len(entry.log) == 2
     assert entry.log[1].startswith("Status updated to COMPLETED on ")
+
 
 def test_entry_update_title():
     entry = Entry("Test Task")
@@ -29,28 +32,31 @@ def test_entry_update_title():
     assert len(entry.log) == 2
     assert entry.log[1].startswith("Title updated to ")
 
+
 def test_entry_serialize_deserialize():
     entry = Entry("Test Task")
     entry.update_status(Status.COMPLETED)
     serialized = entry.serialize()
     deserialized = Entry.deserialize(serialized)
-    
+
     assert deserialized.title == entry.title
     assert deserialized.status == entry.status
     assert deserialized.date_created == entry.date_created
     assert deserialized.date_updated == entry.date_updated
     assert deserialized.log == entry.log
 
+
 def test_entry_serialize_output():
     entry = Entry("Test Task")
     serialized = entry.serialize()
-    
+
     assert serialized["title"] == "Test Task"
     assert serialized["status"] == Status.PENDING.value
     assert isinstance(serialized["date_created"], str)
     assert isinstance(serialized["date_updated"], str)
     assert len(serialized["log"]) == 1
     assert serialized["log"][0].startswith("Task created on ")
+
 
 def test_entry_deserialize_input():
     data = {
@@ -60,32 +66,35 @@ def test_entry_deserialize_input():
         "date_updated": "01-01-2024 12:00:00",
         "log": [
             "Task created on 01-01-2024",
-            "Status updated to COMPLETED on 01-01-2024 12:00:00"
-        ]
+            "Status updated to COMPLETED on 01-01-2024 12:00:00",
+        ],
     }
     entry = Entry.deserialize(data)
-    
+
     assert entry.title == "Test Task"
     assert entry.status == Status.COMPLETED
     assert entry.date_created == "01-01-2024 10:00:00"
     assert entry.date_updated == "01-01-2024 12:00:00"
     assert entry.log == data["log"]
 
+
 @fixture
 def fake_todo_file(tmp_path):
     todo_file = tmp_path / "todo.json"
-    todo_file.write_text('{}')
+    todo_file.write_text("{}")
     return str(todo_file)
+
 
 @fixture
 def fake_todo_with_data(tmp_path):
     todo_file = tmp_path / "todo.json"
-    todo_file.write_text('{}')
+    todo_file.write_text("{}")
     todo = Todo(str(todo_file))
     todo.add("task1")
     todo.add("task2")
     todo.add("task3")
     return str(todo_file)
+
 
 def test_todo_init(fake_todo_file):
     todo = Todo(fake_todo_file)
@@ -94,8 +103,9 @@ def test_todo_init(fake_todo_file):
 
 
 def test_todo_file_not_found():
-   with pytest.raises(FileNotFoundError):
-       Todo("non_existent_file.json")
+    with pytest.raises(FileNotFoundError):
+        Todo("non_existent_file.json")
+
 
 def test_todo_add_item(fake_todo_file):
     todo = Todo(fake_todo_file)
@@ -104,6 +114,7 @@ def test_todo_add_item(fake_todo_file):
     assert len(todo) == 1
     todo.add("Another Task")
     assert len(todo) == 2
+
 
 def test_todo_get_item(fake_todo_with_data):
     todo = Todo(fake_todo_with_data)
@@ -116,9 +127,11 @@ def test_todo_get_item(fake_todo_with_data):
     assert entry.title == "task1"
     assert entry.status == Status.PENDING
 
+
 def test_todo_get_out_of_range(fake_todo_with_data):
-   with pytest.raises(IndexError):
-       Todo(fake_todo_with_data).get(90)
+    with pytest.raises(IndexError):
+        Todo(fake_todo_with_data).get(90)
+
 
 def test_dodo_update_item_title(fake_todo_with_data):
     todo = Todo(fake_todo_with_data)
@@ -131,6 +144,7 @@ def test_dodo_update_item_title(fake_todo_with_data):
     entry = todo.get(2)
     assert entry.title == "even new"
     assert len(entry.log) == 2
+
 
 def test_todo_update_item_status(fake_todo_with_data):
     todo = Todo(fake_todo_with_data)
@@ -148,21 +162,21 @@ def test_todo_update_item_status(fake_todo_with_data):
     entry = todo.get(2)
     assert entry.status == Status.DELETED
     assert len(entry.log) == 3
-    
+
     todo.update(2, status=Status.CANCELLED)
     entry = todo.get(2)
     assert entry.status == Status.CANCELLED
     assert len(entry.log) == 4
-    
+
+
 def test_todo_reorder(fake_todo_with_data):
     todo = Todo(fake_todo_with_data)
-    todo.reorder(0,2)
+    todo.reorder(0, 2)
     assert todo.get(0).title == "task3"
     assert todo.get(1).title == "task2"
     assert todo.get(2).title == "task1"
 
-    todo.reorder(0,1)
+    todo.reorder(0, 1)
     assert todo.get(0).title == "task2"
     assert todo.get(1).title == "task3"
     assert todo.get(2).title == "task1"
-
