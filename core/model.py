@@ -1,8 +1,7 @@
 import enum
-from multiprocessing import Value
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 from pytz import timezone
 from config import Config
@@ -16,13 +15,6 @@ def _get_current_datetime() -> str:
 def _get_current_date() -> str:
     tz = timezone(Config.TIMEZONE)
     return datetime.now(tz).strftime("%d-%m-%Y")
-
-
-def _get_next_date() -> str:
-    tz = timezone(Config.TIMEZONE)
-    next_day = datetime.now(tz).date() + timedelta(days=1)
-    return next_day.strftime("%d-%m-%Y")
-
 
 class Status(enum.Enum):
     PENDING = "pending"
@@ -73,7 +65,6 @@ class Entry:
     
     def __repr__(self):
         return f"Entry<title={self.title}, status={self.status.value}>"
-
 
 class Todo:
     def __init__(self, path: str = "../data/todo.json", date: Optional[str] = None):
