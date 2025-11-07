@@ -169,14 +169,20 @@ def test_todo_update_item_status(fake_todo_with_data):
     assert len(entry.log) == 4
 
 
-def test_todo_reorder(fake_todo_with_data):
+def test_todo_reorder_basic(fake_todo_with_data):
+    """Reorders tasks by moving one to a new position."""
     todo = Todo(fake_todo_with_data)
-    todo.reorder(0, 2)
-    assert todo.get(0).title == "task3"
-    assert todo.get(1).title == "task2"
-    assert todo.get(2).title == "task1"
 
-    todo.reorder(0, 1)
+    # Initial order: task1, task2, task3
+    todo.reorder(0, 2)
+    # Expected order: task2, task3, task1
     assert todo.get(0).title == "task2"
     assert todo.get(1).title == "task3"
+    assert todo.get(2).title == "task1"
+
+    # Move task2 (index 0) to index 1
+    todo.reorder(0, 1)
+    # Expected order: task3, task2, task1
+    assert todo.get(0).title == "task3"
+    assert todo.get(1).title == "task2"
     assert todo.get(2).title == "task1"

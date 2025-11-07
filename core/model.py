@@ -111,11 +111,12 @@ class Todo:
             f.truncate()
             self.data = data
 
-    def add(self, task: str):
-        """Add a task to the todo list for a specific date."""
+    def add(self, task: str) -> Entry:
+        """Add a task to the todo list"""
         date = _get_current_date()
         entry = Entry(task)
         self.__write(date, entry)
+        return entry
 
     def get(self, index: int) -> Entry:
         """Get a task at a specific index."""
@@ -145,16 +146,14 @@ class Todo:
         raise ValueError("Either status or title is required")
 
     def reorder(self, from_index: int, to_index: int) -> None:
-        """Reorder a task from one index to another, matching test expectation."""
+        """Move a task from one index to another, shifting other tasks accordingly."""
         if from_index < 0 or from_index >= len(self.data):
             raise IndexError("From index out of range")
         if to_index < 0 or to_index >= len(self.data):
             raise IndexError("To index out of range")
 
-        self.data[from_index], self.data[to_index] = (
-            self.data[to_index],
-            self.data[from_index],
-        )
+        item = self.data.pop(from_index)  # remove the item
+        self.data.insert(to_index, item)  # insert it at the new position
         self.__bulk_write_date(self.date, self.data)
 
     def __len__(self) -> int:

@@ -3,6 +3,7 @@ from flask import Blueprint, Response, render_template, request
 from config import Config
 
 from .decorators import is_logged_in
+from .model import Todo
 
 router = Blueprint("router", __name__)
 
@@ -33,4 +34,24 @@ def login():
         return resp
     if request.method == "GET":
         return render_template("login.html")
-    raise NotImplementedError("Login logic not implemented yet.")
+
+    return render_template("404.html")
+
+
+@router.route("/todo", methods=["GET", "POST"])
+@is_logged_in
+def todo():
+    if request.method == "GET":
+        todo = Todo()
+        return render_template("todo.html", todos=todo.data, date=todo.date)
+
+    if request.method == "POST":
+        title = request.form.get("title")
+
+        if not title:
+            raise ValueError("Title is required")
+
+        todo = Todo().add(title)
+        return render_template("partials/todo_item.html", todo=todo)
+
+    return render_template("404.html")
