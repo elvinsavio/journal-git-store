@@ -9,14 +9,14 @@ from pytz import timezone
 from config import Config
 
 
-def _get_current_datetime() -> str:
+def _get_current_datetime() -> datetime:
     tz = timezone(Config.TIMEZONE)
-    return datetime.now(tz).strftime("%d-%m-%Y %H:%M:%S")
+    return datetime.now(tz)
 
 
-def _get_current_date() -> str:
+def _get_current_date() -> datetime:
     tz = timezone(Config.TIMEZONE)
-    return datetime.now(tz).strftime("%d-%m-%Y")
+    return datetime.now(tz)
 
 
 class Status(enum.Enum):
@@ -30,15 +30,15 @@ class Entry:
     def __init__(self, title: str):
         __date = _get_current_date()
         __datetime = _get_current_datetime()
-        self.title = title
-        self.status = Status.PENDING
-        self.date_created = __datetime
-        self.date_updated = __datetime
-        self.log = ["Task created on " + __date]
+        self.title: str = title
+        self.status: Status = Status.PENDING
+        self.date_created: datetime = __datetime
+        self.date_updated: datetime = __datetime
+        self.log: list[str] = [f"Task created on {__date.strftime('%d-%m-%Y')}"]
 
     def update_title(self, title: str):
         self.log.append(
-            f"Title updated to {title} from {self.title} on {self.date_updated}"
+            f"Title updated to {title} from {self.title} on {self.date_updated.strftime('%d/%m/%Y, %H:%M:%S')}"
         )
         self.title = title
         self.date_updated = _get_current_datetime()
@@ -46,14 +46,16 @@ class Entry:
     def update_status(self, new_status: Status):
         self.status = new_status
         self.date_updated = _get_current_datetime()
-        self.log.append(f"Status updated to {new_status.name} on {self.date_updated}")
+        self.log.append(
+            f"Status updated to {new_status.name} on {self.date_updated.strftime('%d/%m/%Y, %H:%M:%S')}"
+        )
 
     def serialize(self) -> dict:
         return {
             "title": self.title,
             "status": self.status.value,
-            "date_created": self.date_created,
-            "date_updated": self.date_updated,
+            "date_created": self.date_created.isoformat(),
+            "date_updated": self.date_updated.isoformat(),
             "log": self.log,
         }
 
@@ -61,8 +63,8 @@ class Entry:
     def deserialize(cls, data: dict) -> "Entry":
         entry = cls(data["title"])
         entry.status = Status(data["status"])
-        entry.date_updated = data["date_updated"]
-        entry.date_created = data["date_created"]
+        entry.date_updated = datetime.fromisoformat(data["date_updated"])
+        entry.date_created = datetime.fromisoformat(data["date_created"])
         entry.log = data["log"]
         return entry
 
@@ -79,7 +81,7 @@ class Todo:
         self.data = []
 
         if date is None:
-            date = _get_current_date()
+            date = _get_current_date().strftime("%d/%m/%Y")
 
         self.date = date
         self.__open(date)
@@ -113,7 +115,7 @@ class Todo:
 
     def add(self, task: str) -> Entry:
         """Add a task to the todo list"""
-        date = _get_current_date()
+        date = _get_current_date().strftime("%d/%m/%Y")
         entry = Entry(task)
         self.__write(date, entry)
         return entry

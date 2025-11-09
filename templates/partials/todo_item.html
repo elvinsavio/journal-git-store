@@ -7,18 +7,20 @@
     <div class="cursor-move w-4 h-6 flex flex-col justify-center items-center text-gray-400"
          draggable="true"
          ondragstart="handleDragStart(event)">
-        <span class="block w-3 h-0.2px bg-gray-400 mb-0.5"></span>
-        <span class="block w-3 h-0.5 bg-gray-400 mb-0.5"></span>
-        <span class="block w-3 h-0.5 bg-gray-400"></span>
     </div>
 
     <!-- Todo content -->
     <div class="flex-1">
+        <div>
         <h2 class="font-semibold">{{ todo.title }}</h2>
-        <div class="flex gap-2">
-            <button hx-post="/todo/{{ todo.id }}/done" class="text-xs">Done</button>
+        <span class="text-xs">
+            {{todo.date_created}}
+        </span>
+        </div>
+        <div class="flex gap-2 ">
             <button hx-post="/todo/{{ todo.id }}/postpone" class="ml-auto ghost text-xs">Do it tomorrow</button>
             <button hx-delete="/todo/{{ todo.id }}/delete" class="text-xs ghost text-red-500">Delete</button>
+            <button hx-post="/todo/{{ todo.id }}/done" class="text-xs">Done</button>
         </div>
     </div>
 </div>

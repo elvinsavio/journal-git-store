@@ -222,9 +222,6 @@
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
   }
-  .mb-0\.5 {
-    margin-bottom: calc(var(--spacing) * 0.5);
-  }
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
@@ -249,17 +246,11 @@
   .table {
     display: table;
   }
-  .h-0\.5 {
-    height: calc(var(--spacing) * 0.5);
-  }
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
   .min-h-screen {
     min-height: 100vh;
-  }
-  .w-3 {
-    width: calc(var(--spacing) * 3);
   }
   .w-4 {
     width: calc(var(--spacing) * 4);
@@ -318,9 +309,6 @@
   }
   .bg-card {
     background-color: var(--card);
-  }
-  .bg-gray-400 {
-    background-color: var(--color-gray-400);
   }
   .bg-white {
     background-color: var(--color-white);

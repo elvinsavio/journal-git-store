@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import pytest
@@ -11,8 +12,8 @@ def test_entry_init():
     entry = Entry(title)
     assert entry.title == title
     assert entry.status == Status.PENDING
-    assert isinstance(entry.date_created, str)
-    assert isinstance(entry.date_updated, str)
+    assert isinstance(entry.date_created, datetime.datetime)
+    assert isinstance(entry.date_updated, datetime.datetime)
     assert len(entry.log) == 1
     assert entry.log[0].startswith("Task created on ")
 
@@ -38,7 +39,6 @@ def test_entry_serialize_deserialize():
     entry.update_status(Status.COMPLETED)
     serialized = entry.serialize()
     deserialized = Entry.deserialize(serialized)
-
     assert deserialized.title == entry.title
     assert deserialized.status == entry.status
     assert deserialized.date_created == entry.date_created
@@ -62,19 +62,19 @@ def test_entry_deserialize_input():
     data = {
         "title": "Test Task",
         "status": Status.COMPLETED.value,
-        "date_created": "01-01-2024 10:00:00",
-        "date_updated": "01-01-2024 12:00:00",
+        "date_created": "2024-01-01T10:00:00",
+        "date_updated": "2024-01-01T12:00:00",
         "log": [
-            "Task created on 01-01-2024",
-            "Status updated to COMPLETED on 01-01-2024 12:00:00",
+            "Task created on 2024-01-01",
+            "Status updated to COMPLETED on 2024-01-01T12:00:00",
         ],
     }
     entry = Entry.deserialize(data)
 
     assert entry.title == "Test Task"
     assert entry.status == Status.COMPLETED
-    assert entry.date_created == "01-01-2024 10:00:00"
-    assert entry.date_updated == "01-01-2024 12:00:00"
+    assert entry.date_created.isoformat() == "2024-01-01T10:00:00"
+    assert entry.date_updated.isoformat() == "2024-01-01T12:00:00"
     assert entry.log == data["log"]
 
 
