@@ -4,7 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Construct the path to ../data/todo.json
-FILE_PATH="$(realpath "${SCRIPT_DIR}/../data/todo.json")"
+FILE_PATH="$(realpath "${SCRIPT_DIR}/data/todo.json")"
 
 # Check if the file exists
 if [[ ! -f "$FILE_PATH" ]]; then
