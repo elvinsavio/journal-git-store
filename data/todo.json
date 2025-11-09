@@ -65,5 +65,70 @@
                 "Task created on 08-11-2025"
             ]
         }
+    ],
+    "09/11/2025": [
+        {
+            "title": "Yoink",
+            "status": "pending",
+            "date_created": "2025-11-09T21:54:04.547778+05:30",
+            "date_updated": "2025-11-09T21:54:04.547778+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "Yoink yoink",
+            "status": "pending",
+            "date_created": "2025-11-09T21:57:22.919694+05:30",
+            "date_updated": "2025-11-09T21:57:22.919694+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "Bonk",
+            "status": "pending",
+            "date_created": "2025-11-09T22:11:35.749595+05:30",
+            "date_updated": "2025-11-09T22:11:35.749595+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "Bonk bonk",
+            "status": "pending",
+            "date_created": "2025-11-09T22:12:01.354273+05:30",
+            "date_updated": "2025-11-09T22:12:01.354273+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "Bonk bonk",
+            "status": "pending",
+            "date_created": "2025-11-09T22:12:11.658265+05:30",
+            "date_updated": "2025-11-09T22:12:11.658265+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "Bonk lonk",
+            "status": "pending",
+            "date_created": "2025-11-09T22:12:20.907377+05:30",
+            "date_updated": "2025-11-09T22:12:20.907377+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        },
+        {
+            "title": "donk",
+            "status": "pending",
+            "date_created": "2025-11-09T22:12:46.918569+05:30",
+            "date_updated": "2025-11-09T22:12:46.918569+05:30",
+            "log": [
+                "Task created on 09-11-2025"
+            ]
+        }
     ]
 }

@@ -17,3 +17,10 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
+-   repo: local
+    hooks:
+      - id: clean-data
+        name: Clean Data
+        entry: ./scripts/clean_data.sh
+        language: system
+        types: [python]
