@@ -3,7 +3,7 @@ from flask import Blueprint, Response, render_template, request
 from config import Config
 
 from .decorators import is_logged_in
-from .model import Todo
+from .model import Status, Todo
 
 router = Blueprint("router", __name__)
 
@@ -51,7 +51,28 @@ def todo():
         if not title:
             raise ValueError("Title is required")
 
-        todo = Todo().add(title)
-        return render_template("partials/todo_item.html", todo=todo)
+        todo = Todo()
+        entry = todo.add(title)
+        return render_template("partials/todo_item.html", todo=entry, date=todo.date)
+
+    return render_template("404.html")
+
+
+@router.route("/todo/<date>/<index>/<method>", methods=["POST", "DELETE"])
+@is_logged_in
+def todo_date(date: str, index: int, method: str):
+    index = int(index)
+    print(index, date, method)
+    if index < 0 or not date or not method:
+        raise ValueError("Index, date, and method required")
+
+    if request.method == "POST":
+        match method:
+            case "completed":
+                todo = Todo().update(index, Status.COMPLETED)
+                return render_template("partials/todo_item.html", todo=todo)
+
+    if request.method == "DELETE":
+        pass
 
     return render_template("404.html")

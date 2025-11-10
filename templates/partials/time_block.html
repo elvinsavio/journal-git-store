@@ -1,0 +1,8 @@
+<span class="group relative">
+  <span class="bg-muted text-muted-foreground p-1 rounded">
+    {{ time.strftime("%H:%M") }}
+  </span>
+  <span class="absolute hidden group-hover:flex -bottom-9 -right-1 flex-nowrap bg-card border-border border p-1 shadow whitespace-nowrap">
+    {{ time.strftime("%d/%m/%y %H:%M:%S") }}
+  </span>
+</span>

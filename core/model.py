@@ -14,11 +14,6 @@ def _get_current_datetime() -> datetime:
     return datetime.now(tz)
 
 
-def _get_current_date() -> datetime:
-    tz = timezone(Config.TIMEZONE)
-    return datetime.now(tz)
-
-
 class Status(enum.Enum):
     PENDING = "pending"
     COMPLETED = "completed"
@@ -27,18 +22,20 @@ class Status(enum.Enum):
 
 
 class Entry:
-    def __init__(self, title: str):
-        __date = _get_current_date()
+    def __init__(self, id: int, title: str):
         __datetime = _get_current_datetime()
+        self.id: int = id
         self.title: str = title
         self.status: Status = Status.PENDING
         self.date_created: datetime = __datetime
         self.date_updated: datetime = __datetime
-        self.log: list[str] = [f"Task created on {__date.strftime('%d-%m-%Y')}"]
+        self.log: list[str] = [
+            f"Task created on {__datetime.strftime('%d-%m-%Y %H:%M:%S')}"
+        ]
 
     def update_title(self, title: str):
         self.log.append(
-            f"Title updated to {title} from {self.title} on {self.date_updated.strftime('%d/%m/%Y, %H:%M:%S')}"
+            f"Title updated to {title} from {self.title} on {self.date_updated.strftime('%d-%m-%Y, %H:%M:%S')}"
         )
         self.title = title
         self.date_updated = _get_current_datetime()
@@ -47,11 +44,12 @@ class Entry:
         self.status = new_status
         self.date_updated = _get_current_datetime()
         self.log.append(
-            f"Status updated to {new_status.name} on {self.date_updated.strftime('%d/%m/%Y, %H:%M:%S')}"
+            f"Status updated to {new_status.name} on {self.date_updated.strftime('%d-%m-%Y, %H:%M:%S')}"
         )
 
     def serialize(self) -> dict:
         return {
+            "id": self.id,
             "title": self.title,
             "status": self.status.value,
             "date_created": self.date_created.isoformat(),
@@ -61,7 +59,8 @@ class Entry:
 
     @classmethod
     def deserialize(cls, data: dict) -> "Entry":
-        entry = cls(data["title"])
+        entry = cls(data["id"], data["title"])
+        entry.id = data["id"]
         entry.status = Status(data["status"])
         entry.date_updated = datetime.fromisoformat(data["date_updated"])
         entry.date_created = datetime.fromisoformat(data["date_created"])
@@ -81,7 +80,7 @@ class Todo:
         self.data = []
 
         if date is None:
-            date = _get_current_date().strftime("%d/%m/%Y")
+            date = _get_current_datetime().strftime("%d-%m-%Y")
 
         self.date = date
         self.__open(date)
@@ -115,8 +114,8 @@ class Todo:
 
     def add(self, task: str) -> Entry:
         """Add a task to the todo list"""
-        date = _get_current_date().strftime("%d/%m/%Y")
-        entry = Entry(task)
+        date = _get_current_datetime().strftime("%d-%m-%Y")
+        entry = Entry(len(self), task)
         self.__write(date, entry)
         return entry
 
@@ -128,7 +127,7 @@ class Todo:
 
     def update(
         self, index: int, status: Optional[Status] = None, title: Optional[str] = None
-    ) -> None:
+    ) -> Entry:
         """Update the status of a task at a specific index."""
         if index < 0 or index >= len(self.data):
             raise IndexError("Task index out of range")
@@ -138,12 +137,12 @@ class Todo:
         if title:
             task.update_title(title)
             self.__bulk_write_date(self.date, self.data)
-            return
+            return task
 
         if status:
             task.update_status(status)
             self.__bulk_write_date(self.date, self.data)
-            return
+            return task
 
         raise ValueError("Either status or title is required")
 

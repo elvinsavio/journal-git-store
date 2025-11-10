@@ -9,7 +9,8 @@ from core.model import Entry, Status, Todo
 
 def test_entry_init():
     title = "Test Task"
-    entry = Entry(title)
+    entry = Entry(1, title)
+    assert entry.id == 1
     assert entry.title == title
     assert entry.status == Status.PENDING
     assert isinstance(entry.date_created, datetime.datetime)
@@ -19,7 +20,7 @@ def test_entry_init():
 
 
 def test_entry_update_status():
-    entry = Entry("Test Task")
+    entry = Entry(1, "Test Task")
     entry.update_status(Status.COMPLETED)
     assert entry.status == Status.COMPLETED
     assert len(entry.log) == 2
@@ -27,7 +28,7 @@ def test_entry_update_status():
 
 
 def test_entry_update_title():
-    entry = Entry("Test Task")
+    entry = Entry(1, "Test Task")
     entry.update_title("Testing")
     assert entry.title == "Testing"
     assert len(entry.log) == 2
@@ -35,7 +36,7 @@ def test_entry_update_title():
 
 
 def test_entry_serialize_deserialize():
-    entry = Entry("Test Task")
+    entry = Entry(1, "Test Task")
     entry.update_status(Status.COMPLETED)
     serialized = entry.serialize()
     deserialized = Entry.deserialize(serialized)
@@ -47,7 +48,7 @@ def test_entry_serialize_deserialize():
 
 
 def test_entry_serialize_output():
-    entry = Entry("Test Task")
+    entry = Entry(1, "Test Task")
     serialized = entry.serialize()
 
     assert serialized["title"] == "Test Task"
@@ -60,6 +61,7 @@ def test_entry_serialize_output():
 
 def test_entry_deserialize_input():
     data = {
+        "id": "15563d85-d5c1-4404-8495-a079545415a0",
         "title": "Test Task",
         "status": Status.COMPLETED.value,
         "date_created": "2024-01-01T10:00:00",

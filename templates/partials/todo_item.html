@@ -1,22 +1,57 @@
-<div class="mb-2 p-2 border border-border rounded shadow bg-card text-card-foreground flex items-center gap-2"
-    data-id="{{ todo.id }}">
+<div id="todo-entry-{{ todo.id }}" class="
+    mb-2 p-2 border rounded shadow flex items-center gap-2 bg-card text-card-foreground
+    {% if todo.status.value == 'completed' %}
+      border-green-500 opacity-70
+    {% elif todo.status.value == 'deleted' %}
+      border-red-300 opacity-60 italic
+    {% else %}
+      border-border
+    {% endif %}
+  " data-id="{{ todo.id }}">
     <div class="flex-1">
-        <div class="flex justify-between">
-            <h2 class="font-semibold">{{ todo.title }}</h2>
-            <span class="text-xs text-muted-foreground bg-muted p-1">
-                {{todo.date_updated.strftime("%H:%M")}}
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold truncate">{{ todo.title }}</h2>
+            <span class="text-xs text-muted-foreground bg-muted p-1 rounded">
+                {% with time=todo.date_created %}
+                {% include "partials/time_block.html" %}
+                {% endwith %}
             </span>
         </div>
-        <div class="flex gap-2 ">
-            <button hx-post="/todo/{{ todo.id }}/postpone" class="ml-auto ghost text-xs">
-                {% include "icons/next.html" %}
-            </button>
-            <button hx-delete="/todo/{{ todo.id }}/delete" class="text-xs ghost text-red-500">
-                {% include "icons/trash.html" %}
-            </button>
-            <button hx-post="/todo/{{ todo.id }}/done" class="text-xs">
-                {% include "icons/tick.html" %}
-            </button>
+
+        <div x-data="{ open: false }" class="mt-1">
+            <div class="flex justify-between">
+                <span class="text-sm text-muted-foreground p-1 w-full flex items-center group cursor-pointer"
+                    @click="open = !open">
+                    <div class="group-hover:text-foreground mr-1">{% include "icons/caret_right.html" %}</div>
+                    Track
+                </span>
+                {% if todo.status.value == 'pending' %}
+                <div class="flex gap-2 mt-1">
+                    <button hx-post="/todo/{{ date }}/{{ todo.id }}/postpone" hx-target="#todo-entry-{{ todo.id }}"
+                        hx-swap="outerHTML" class="ml-auto text-xs ghost" aria-label="Postpone">
+                        {% include "icons/next.html" %}
+                    </button>
+                    <button hx-delete="/todo/{{ date }}/{{ todo.id }}/delete" hx-target="#todo-entry-{{ todo.id }}"
+                        hx-swap="outerHTML" class="text-xs ghost text-red-500" aria-label="Delete">
+                        {% include "icons/trash.html" %}
+                    </button>
+                    <button hx-post="/todo/{{ date }}/{{ todo.id }}/completed" hx-target="#todo-entry-{{ todo.id }}"
+                        hx-swap="outerHTML" class="text-xs text-green-600 hover:text-green-700"
+                        aria-label="Mark as completed">
+                        {% include "icons/tick.html" %}
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <div x-show="open" x-cloak class="ml-4 mt-1 text-xs text-muted-foreground">
+                {% if todo.log %}
+                {% for entry in todo.log %}
+                <div> - {{ entry }}</div>
+                {% endfor %}
+                {% else %}
+                <span class="italic">No log entries</span>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

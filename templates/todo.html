@@ -8,13 +8,13 @@
 
     <section class="max-w-4xl mx-auto">
         <h1 class="text-xl font-bold mb-4">Todo List for {{ date }}</h1>
-        <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="beforeend">
+        <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="afterbegin">
             <input type="hidden" name="date" value="{{ date }}">
             <input name="title" >
             <button type="submit" class="mb-4 px-4 py-2">Add</button>
         </form>
         <div id="todo-container">
-        {% for todo in todos %}
+        {% for todo in todos | reverse %}
             {% include "partials/todo_item.html" %}
         {% endfor %}
         </div>
