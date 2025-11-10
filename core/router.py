@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+
 from flask import Blueprint, Response, render_template, request
 
 from config import Config
 
 from .decorators import is_logged_in
-from .model import Status, Todo
+from .model import Status, Todo, _get_current_datetime
 
 router = Blueprint("router", __name__)
 
@@ -42,8 +44,19 @@ def login():
 @is_logged_in
 def todo():
     if request.method == "GET":
-        todo = Todo()
-        return render_template("todo.html", todos=todo.data, date=todo.date)
+        date = request.args.get("_t", None)
+        todo = Todo(date=date)
+        prev_date = datetime.strptime(todo.date, "%d-%m-%Y") - timedelta(days=1)
+        next_date = datetime.strptime(todo.date, "%d-%m-%Y") + timedelta(days=1)
+        today = _get_current_datetime()
+        return render_template(
+            "todo.html",
+            todos=todo.data,
+            today=today,
+            date=todo.date,
+            next_date=next_date,
+            prev_date=prev_date,
+        )
 
     if request.method == "POST":
         title = request.form.get("title")
@@ -62,7 +75,6 @@ def todo():
 @is_logged_in
 def todo_date(date: str, index: int, method: str):
     index = int(index)
-    print(index, date, method)
     if index < 0 or not date or not method:
         raise ValueError("Index, date, and method required")
 

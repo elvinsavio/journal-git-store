@@ -4,19 +4,33 @@
 
 
 {% block content %}
-    {% include "partials/nav_bar.html" %}
+{% include "partials/nav_bar.html" %}
 
-    <section class="max-w-4xl mx-auto">
+<section class="max-w-4xl mx-auto">
+    <div class="flex justify-between">
+        <a href="/todo?_t={{ prev_date.strftime('%d-%m-%Y') }}" class="[&>svg]:rotate-180  flex items-center gap-1">
+            {% include "icons/caret_right.html" %}
+            <span class="text-xs">
+                {{ prev_date.strftime("%d-%m") }}
+            </span>
+        </a>
         <h1 class="text-xl font-bold mb-4">Todo List for {{ date }}</h1>
-        <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="afterbegin">
-            <input type="hidden" name="date" value="{{ date }}">
-            <input name="title" >
-            <button type="submit" class="mb-4 px-4 py-2">Add</button>
-        </form>
-        <div id="todo-container">
+        <a href="/todo?_t={{ next_date.strftime('%d-%m-%Y') }}" class="flex items-center gap-1">
+            <span class="text-xs">
+                {{ next_date.strftime("%d-%m") }}
+            </span>
+            {% include "icons/caret_right.html" %}
+        </a>
+    </div>
+    <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="afterbegin">
+        <input type="hidden" name="date" value="{{ date }}">
+        <input name="title">
+        <button type="submit" class="mb-4 px-4 py-2">Add</button>
+    </form>
+    <div id="todo-container">
         {% for todo in todos | reverse %}
-            {% include "partials/todo_item.html" %}
+        {% include "partials/todo_item.html" %}
         {% endfor %}
-        </div>
-    </section>
+    </div>
+</section>
 {% endblock %}
