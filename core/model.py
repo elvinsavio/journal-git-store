@@ -114,7 +114,7 @@ class Todo:
 
     def add(self, task: str) -> Entry:
         """Add a task to the todo list"""
-        date = _get_current_datetime().strftime("%d-%m-%Y")
+        date = self.date
         entry = Entry(len(self), task)
         self.__write(date, entry)
         return entry
@@ -173,6 +173,7 @@ class Todo:
         # Get task and remove from today's list
         task = self.data.pop(index)
         task.date_updated = _get_current_datetime()
+        task.id = len(Todo(date=next_day_str))
         task.log.append(
             f"Task postponed to {next_day_str} on {task.date_updated.strftime('%d-%m-%Y, %H:%M:%S')}"
         )
@@ -191,3 +192,6 @@ class Todo:
 
     def __len__(self) -> int:
         return len(self.data)
+
+    def __repr__(self):
+        return f"Todo<date={self.date}, count={len(self)}>"

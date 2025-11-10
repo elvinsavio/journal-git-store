@@ -49,6 +49,12 @@ def todo():
         prev_date = datetime.strptime(todo.date, "%d-%m-%Y") - timedelta(days=1)
         next_date = datetime.strptime(todo.date, "%d-%m-%Y") + timedelta(days=1)
         today = _get_current_datetime()
+
+        is_future: bool = datetime.strptime(todo.date, "%d-%m-%Y").date() > today.date()
+        is_present: bool = (
+            datetime.strptime(todo.date, "%d-%m-%Y").date() == today.date()
+        )
+
         return render_template(
             "todo.html",
             todos=todo.data,
@@ -56,15 +62,18 @@ def todo():
             date=todo.date,
             next_date=next_date,
             prev_date=prev_date,
+            is_future=is_future,
+            is_present=is_present,
         )
 
     if request.method == "POST":
         title = request.form.get("title")
+        date = request.args.get("_t")
 
-        if not title:
-            raise ValueError("Title is required")
+        if not title or not date:
+            raise ValueError("Title, Date is required")
 
-        todo = Todo()
+        todo = Todo(date=date)
         entry = todo.add(title)
         return render_template("partials/todo_item.html", todo=entry, date=todo.date)
 
@@ -81,14 +90,14 @@ def todo_date(date: str, index: int, method: str):
     if request.method == "POST":
         match method:
             case "completed":
-                todo = Todo().update(index, Status.COMPLETED)
+                todo = Todo(date=date).update(index, Status.COMPLETED)
                 return render_template("partials/todo_item.html", todo=todo)
             case "postpone":
-                todo = Todo().postpone(index)
+                todo = Todo(date=date).postpone(index)
                 return ""
 
     if request.method == "DELETE":
-        todo = Todo().update(index, Status.DELETED)
+        todo = Todo(date=date).update(index, Status.DELETED)
         return render_template("partials/todo_item.html", todo=todo)
 
     return render_template("404.html")

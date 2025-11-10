@@ -14,7 +14,34 @@
                 {{ prev_date.strftime("%d-%m") }}
             </span>
         </a>
-        <h1 class="text-xl font-bold mb-4">Todo List for {{ date }}</h1>
+        <div class="flex items-center justify-center gap-2 relative"
+            x-data="{ today: new Date().toISOString().split('T')[0] }">
+            <h1 @click="$refs.dateInput.showPicker()"
+                class="text-lg cursor-pointer border-b border-transparent hover:border-gray-400 transition">
+                {{ date }}
+            </h1>
+
+            <input type="date" x-ref="dateInput" @change="
+      const d = new Date($event.target.value);
+      const formatted = ('0' + d.getDate()).slice(-2) + '-' +
+                        ('0' + (d.getMonth() + 1)).slice(-2) + '-' +
+                        d.getFullYear();
+      window.location.href = '/todo?_t=' + formatted;
+    " class="absolute opacity-0 pointer-events-none">
+
+            <a {% if not is_present %} href="/todo?_t={{ today.strftime('%d-%m-%Y') }}" {% endif %} class="text-xs
+    {% if is_present %}
+      bg-green-200 border-green-500
+    {% else %}
+      border-border
+    {% endif %}
+    px-2 py-px rounded border shadow">
+                today
+            </a>
+        </div>
+
+
+
         <a href="/todo?_t={{ next_date.strftime('%d-%m-%Y') }}" class="flex items-center gap-1">
             <span class="text-xs">
                 {{ next_date.strftime("%d-%m") }}
@@ -22,11 +49,12 @@
             {% include "icons/caret_right.html" %}
         </a>
     </div>
-    <form class="flex gap-1" hx-post="/todo" hx-target="#todo-container" hx-swap="afterbegin">
-        <input type="hidden" name="date" value="{{ date }}">
+    {% if is_present or is_future %}
+    <form class="flex gap-1" hx-post="/todo?_t={{ date }}" hx-target="#todo-container" hx-swap="afterbegin">
         <input name="title">
         <button type="submit" class="mb-4 px-4 py-2">Add</button>
     </form>
+    {% endif %}
     <div id="todo-container">
         {% for todo in todos | reverse %}
         {% include "partials/todo_item.html" %}
