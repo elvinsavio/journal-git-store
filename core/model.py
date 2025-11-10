@@ -1,7 +1,7 @@
 import enum
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from pytz import timezone
@@ -156,6 +156,38 @@ class Todo:
         item = self.data.pop(from_index)  # remove the item
         self.data.insert(to_index, item)  # insert it at the new position
         self.__bulk_write_date(self.date, self.data)
+
+    def postpone(self, index: int) -> Entry:
+        """Move a task from today to the next day."""
+        if index < 0 or index >= len(self.data):
+            raise IndexError("Task index out of range")
+
+        with open(self.file_path, "r+") as f:
+            data = json.load(f)
+
+        # Current and next day keys
+        current_date = datetime.strptime(self.date, "%d-%m-%Y")
+        next_day = current_date + timedelta(days=1)
+        next_day_str = next_day.strftime("%d-%m-%Y")
+
+        # Get task and remove from today's list
+        task = self.data.pop(index)
+        task.date_updated = _get_current_datetime()
+        task.log.append(
+            f"Task postponed to {next_day_str} on {task.date_updated.strftime('%d-%m-%Y, %H:%M:%S')}"
+        )
+
+        # Update file data
+        if next_day_str not in data:
+            data[next_day_str] = []
+
+        data[self.date] = [entry.serialize() for entry in self.data]
+        data[next_day_str].append(task.serialize())
+
+        with open(self.file_path, "w") as f:
+            json.dump(data, f, indent=4)
+
+        return task
 
     def __len__(self) -> int:
         return len(self.data)

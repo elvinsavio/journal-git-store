@@ -71,8 +71,12 @@ def todo_date(date: str, index: int, method: str):
             case "completed":
                 todo = Todo().update(index, Status.COMPLETED)
                 return render_template("partials/todo_item.html", todo=todo)
+            case "postpone":
+                todo = Todo().postpone(index)
+                return ""
 
     if request.method == "DELETE":
-        pass
+        todo = Todo().update(index, Status.DELETED)
+        return render_template("partials/todo_item.html", todo=todo)
 
     return render_template("404.html")
