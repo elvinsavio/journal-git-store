@@ -54,7 +54,6 @@ def todo():
         is_present: bool = (
             datetime.strptime(todo.date, "%d-%m-%Y").date() == today.date()
         )
-
         return render_template(
             "todo.html",
             todos=todo.data,
@@ -64,6 +63,7 @@ def todo():
             prev_date=prev_date,
             is_future=is_future,
             is_present=is_present,
+            percentage=todo.percentage(),
         )
 
     if request.method == "POST":
@@ -71,11 +71,11 @@ def todo():
         date = request.args.get("_t")
 
         if not title or not date:
-            raise ValueError("Title, Date is required")
+            return render_template("partials/todo/form.html", error="input is required")
 
         todo = Todo(date=date)
         entry = todo.add(title)
-        return render_template("partials/todo_item.html", todo=entry, date=todo.date)
+        return render_template("partials/todo/item.html", todo=entry, date=todo.date)
 
     return render_template("404.html")
 
@@ -91,13 +91,13 @@ def todo_date(date: str, index: int, method: str):
         match method:
             case "completed":
                 todo = Todo(date=date).update(index, Status.COMPLETED)
-                return render_template("partials/todo_item.html", todo=todo)
+                return render_template("partials/todo/item.html", todo=todo)
             case "postpone":
                 todo = Todo(date=date).postpone(index)
                 return ""
 
     if request.method == "DELETE":
         todo = Todo(date=date).update(index, Status.DELETED)
-        return render_template("partials/todo_item.html", todo=todo)
+        return render_template("partials/todo/item.html", todo=todo)
 
     return render_template("404.html")

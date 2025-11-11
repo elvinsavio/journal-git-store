@@ -6,7 +6,7 @@
 {% block content %}
 {% include "partials/nav_bar.html" %}
 
-<section class="max-w-4xl mx-auto">
+<section class="flex flex-col gap-2">
     <div class="flex justify-between">
         <a href="/todo?_t={{ prev_date.strftime('%d-%m-%Y') }}" class="[&>svg]:rotate-180  flex items-center gap-1">
             {% include "icons/caret_right.html" %}
@@ -49,15 +49,13 @@
             {% include "icons/caret_right.html" %}
         </a>
     </div>
+    {% include "partials/todo/progress_bar.html" %}
     {% if is_present or is_future %}
-    <form class="flex gap-1" hx-post="/todo?_t={{ date }}" hx-target="#todo-container" hx-swap="afterbegin">
-        <input name="title">
-        <button type="submit" class="mb-4 px-4 py-2">Add</button>
-    </form>
+    {% include "partials/todo/form.html" %}
     {% endif %}
     <div id="todo-container">
         {% for todo in todos | reverse %}
-        {% include "partials/todo_item.html" %}
+        {% include "partials/todo/item.html" %}
         {% endfor %}
     </div>
 </section>

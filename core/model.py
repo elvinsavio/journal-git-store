@@ -190,6 +190,25 @@ class Todo:
 
         return task
 
+    def percentage(self):
+        """
+        Calculate the percentage of tasks by status (completed, pending, deleted)
+        for the currently loaded date.
+        """
+        status_counts = {"completed": 0, "pending": 0, "deleted": 0}
+        total = 0
+
+        for task in self.data:
+            status = task.status.value.lower()
+            if status in status_counts:
+                status_counts[status] += 1
+                total += 1
+
+        if total == 0:
+            return {k: 0.0 for k in status_counts}  # Avoid division by zero
+
+        return {k: round((v / total) * 100, 2) for k, v in status_counts.items()}
+
     def __len__(self) -> int:
         return len(self.data)
 

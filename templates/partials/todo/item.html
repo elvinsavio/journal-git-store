@@ -9,8 +9,8 @@
     {% endif %}
   " data-id="{{ todo.id }}">
     <div class="flex-1">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold truncate">{{ todo.title }}</h2>
+        <div class="flex justify-between flex-wrap items-center">
+            <h2 class="font-semibold flex flex-wrap">{{ todo.title }}</h2>
             <span class="text-xs text-muted-foreground bg-muted p-1 rounded">
                 {% with time=todo.date_created %}
                 {% include "partials/time_block.html" %}

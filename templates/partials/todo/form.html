@@ -1,0 +1,8 @@
+<form class="flex gap-1" hx-post="/todo?_t={{ date }}" hx-target="#todo-container"
+    hx-on::after-request="if(event.detail.successful) this.reset()" hx-swap="afterbegin">
+    <input name="title">
+    <button type="submit" class=" px-4 py-2">Add</button>
+    {% if error %}
+    <span>{{ error }}</span>
+    {% endif %}
+</form>

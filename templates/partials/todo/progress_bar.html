@@ -1,0 +1,48 @@
+{% if percentage %}
+<div>
+    <div class="w-full rounded-full h-1 flex text-sm select-none relative">
+        {% if percentage.completed > 0 %}
+        <div x-data="{ open: false }"
+             @mouseover="open = true"
+             @mouseleave="open = false"
+             class="bg-green-500 h-full relative"
+             style="width: {{ percentage.completed }}%"
+             title="Completed: {{ percentage.completed }}%">
+            <span x-show="open"
+                class="absolute top-1/2 left-1/2 z-10 px-2 py-0.5 transform -translate-x-1/2 -translate-y-1/2 rounded bg-background border border-border text-xs">
+                Completed: {{ percentage.completed }}%
+            </span>
+        </div>
+        {% endif %}
+
+        {% if percentage.pending > 0 %}
+        <div x-data="{ open: false }"
+             @mouseover="open = true"
+             @mouseleave="open = false"
+             class="bg-yellow-400 h-full relative text-gray-800"
+             style="width: {{ percentage.pending }}%"
+             title="Pending: {{ percentage.pending }}%">
+            <span x-show="open"
+                class="absolute top-1/2 left-1/2 z-10 px-2 py-0.5 transform -translate-x-1/2 -translate-y-1/2 rounded bg-background border border-border text-xs">
+                Pending: {{ percentage.pending }}%
+            </span>
+        </div>
+        {% endif %}
+
+        {% if percentage.deleted > 0 %}
+        <div x-data="{ open: false }"
+             @mouseover="open = true"
+             @mouseleave="open = false"
+             class="bg-red-500 h-full relative"
+             style="width: {{ percentage.deleted }}%"
+             title="Deleted: {{ percentage.deleted }}%">
+            <span x-show="open"
+                class="absolute top-1/2 left-1/2 z-10 px-2 py-0.5 transform -translate-x-1/2 -translate-y-1/2 rounded bg-background border border-border text-xs">
+                Deleted: {{ percentage.deleted }}%
+            </span>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}
