@@ -80,6 +80,15 @@ def todo():
     return render_template("404.html")
 
 
+@router.route("/todo/<date>/progress", methods=["GET"])
+@is_logged_in
+def todo_progress(date: str):
+    if request.method == "GET":
+        percentage = Todo(date=date).percentage()
+        return render_template("partials/todo/progress_bar.html", percentage=percentage)
+    return render_template("404.html")
+
+
 @router.route("/todo/<date>/<index>/<method>", methods=["POST", "DELETE"])
 @is_logged_in
 def todo_date(date: str, index: int, method: str):

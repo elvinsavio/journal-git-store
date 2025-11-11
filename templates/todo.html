@@ -2,6 +2,15 @@
 
 {% block title %}Todo{% endblock %}
 
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.body.addEventListener("htmx:afterSwap", function (event) {
+            htmx.ajax("GET", "/todo/{{date}}/progress", "#progress-bar")
+        });
+    });
+</script>
+{% endblock %}
 
 {% block content %}
 {% include "partials/nav_bar.html" %}
