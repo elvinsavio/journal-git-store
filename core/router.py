@@ -13,7 +13,15 @@ router = Blueprint("router", __name__)
 @router.route("/")
 @is_logged_in
 def home():
-    return render_template("dashboard.html")
+    weekly_graph = Todo.percentage_weekly()
+    daily_graph = Todo().percentage()
+    print(daily_graph)
+    return render_template(
+        "dashboard.html",
+        weekly_graph_percentage=weekly_graph["percentage"],
+        weekly_graph_count=weekly_graph["count"],
+        daily_graph=daily_graph,
+    )
 
 
 @router.route("/login", methods=["GET", "POST"])

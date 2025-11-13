@@ -2,8 +2,175 @@
 
 {% block title %}Welcome{% endblock %}
 
-{% block content %}
-    {% include "partials/nav_bar.html" %}
-    {% include "partials/time_now.html" %}
+{% block script %}
+<script src="js/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const dataPercentage = {{ weekly_graph_percentage | tojson | safe
+    }};
+    const dataCount = {{ weekly_graph_count | tojson | safe }};
+    const dataDaily = {{ daily_graph | tojson | safe }};
 
+    function getCSSVar(variable) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+    }
+
+    const chartDataPercentage = {
+        labels: dataPercentage.dates,
+        datasets: [
+            {
+                label: 'Completed',
+                data: dataPercentage.completed,
+                backgroundColor: getCSSVar('--chart-2'),
+            },
+            {
+                label: 'Pending',
+                data: dataPercentage.pending,
+                backgroundColor: getCSSVar('--chart-5'),
+            },
+            {
+                label: 'Deleted',
+                data: dataPercentage.deleted,
+                backgroundColor: getCSSVar('--chart-1'),
+            }
+        ]
+    };
+
+    const configPercentage = {
+        type: 'bar',
+        data: chartDataPercentage,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true, beginAtZero: true, max: 100 }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.dataset.label + ': ' + context.parsed.y + '%'
+                    }
+                }
+            }
+        }
+    };
+
+    const chartDataCount = {
+        labels: dataCount.dates,
+        datasets: [
+            {
+                label: 'Completed',
+                data: dataCount.completed,
+                backgroundColor: getCSSVar('--chart-2'),
+            },
+            {
+                label: 'Pending',
+                data: dataCount.pending,
+                backgroundColor: getCSSVar('--chart-5'),
+            },
+            {
+                label: 'Deleted',
+                data: dataCount.deleted,
+                backgroundColor: getCSSVar('--chart-1'),
+            }
+        ]
+    };
+
+    const configCount = {
+        type: 'bar',
+        data: chartDataCount,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {},
+                y: {
+                    beginAtZero: true, ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    };
+
+    const chartDataDaily = {
+        labels: ['Completed', 'Pending', 'Deleted'],
+        datasets: [
+            {
+                data: [
+                    dataDaily.completed || 0,
+                    dataDaily.pending || 0,
+                    dataDaily.deleted || 0,
+                ],
+                backgroundColor: [
+                    getCSSVar('--chart-2'),
+                    getCSSVar('--chart-5'),
+                    getCSSVar('--chart-1'),
+                ],
+            }
+        ]
+    };
+
+    const configDaily = {
+        type: 'pie',
+        data: chartDataDaily,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.label + ': ' + context.parsed + '%'
+                    }
+                }
+            }
+        }
+    };
+
+
+    const ctxPercentage = document.getElementById('weeklyChartPercentage').getContext('2d');
+    const ctxCount = document.getElementById('weeklyChartCount').getContext('2d');
+    const ctxDaily = document.getElementById('dailyChart').getContext('2d');
+    new Chart(ctxPercentage, configPercentage);
+    new Chart(ctxCount, configCount);
+    new Chart(ctxDaily, configDaily);
+});
+</script>
+{% endblock %}
+
+{% block content %}
+{% include "partials/nav_bar.html" %}
+
+<section class="flex flex-col gap-2">
+    <div x-data="{ tab: 1 }" class="h-[300px] bg-card text-card-foreground border border-border rounded shadow p-2">
+        <div class="flex justify-between">
+            <h1 class="font-bold">Weekly report</h1>
+
+
+            <div class="flex space-x-2 border-b border-border mb-2">
+                <button class="ghost text-xs" :class="tab === 1 ? 'border-border' : 'text-muted-foreground'"
+                    @click="tab = 1">
+                    count
+                </button>
+                <button class="ghost text-xs" :class="tab === 2 ? 'border-border' : 'text-muted-foreground'"
+                    @click="tab = 2">
+                    percentage
+                </button>
+            </div>
+        </div>
+
+        <div class="relative h-60">
+            <canvas x-show="tab === 1" id="weeklyChartCount" class="absolute inset-0"></canvas>
+            <canvas x-show="tab === 2" id="weeklyChartPercentage" class="absolute inset-0"></canvas>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 h-[250px] ">
+
+        <div class="bg-card text-card-foreground border border-border rounded shadow p-2">
+            <h1 class="font-bold">Weekly report</h1>
+            <canvas id="dailyChart" class="max-h-[250px]"></canvas>
+        </div>
+    </div>
+</section>
 {% endblock %}

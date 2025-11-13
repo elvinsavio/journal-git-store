@@ -209,6 +209,67 @@ class Todo:
 
         return {k: round((v / total) * 100, 2) for k, v in status_counts.items()}
 
+    @staticmethod
+    def percentage_weekly(path: str = "../data/todo.json") -> dict:
+        """
+        Static method:
+        Computes task status percentages (Completed, Pending, Deleted)
+        for the most recent full week (Monday–Sunday).
+
+        Returns:
+            dict -> {
+                'dates': ['Mon', 'Tue', ...],
+                'completed': [...],
+                'pending': [...],
+                'deleted': [...]
+            }
+        """
+        file_path = os.path.join(os.path.dirname(__file__), path)
+        file_path = os.path.abspath(file_path)
+
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Todo file not found at {file_path}")
+
+        with open(file_path, "r") as f:
+            data: dict[str, list[dict]] = json.load(f)
+
+        today_dt = _get_current_datetime()
+        monday = today_dt - timedelta(days=today_dt.weekday())
+
+        results = {
+            "percentage": {"dates": [], "completed": [], "pending": [], "deleted": []},
+            "count": {"dates": [], "completed": [], "pending": [], "deleted": []},
+        }
+
+        for i in range(7):
+            day = monday + timedelta(days=i)
+            day_str = day.strftime("%d-%m-%Y")
+            weekday_label = day.strftime("%a")
+            entries = data.get(day_str, [])
+
+            results["percentage"]["dates"].append(weekday_label)
+            results["count"]["dates"].append(weekday_label)
+
+            if not entries:
+                for k in ["completed", "pending", "deleted"]:
+                    results["percentage"][k].append(0)
+                    results["count"][k].append(0)
+                continue
+
+            total = len(entries)
+            counts = {"completed": 0, "pending": 0, "deleted": 0}
+
+            for e in entries:
+                s = e["status"].lower()
+                if s in counts:
+                    counts[s] += 1
+
+            for k in counts:
+                results["count"][k].append(counts[k])
+                results["percentage"][k].append(round((counts[k] / total) * 100, 2))
+
+        return results
+
     def __len__(self) -> int:
         return len(self.data)
 
