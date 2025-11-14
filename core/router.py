@@ -15,7 +15,6 @@ router = Blueprint("router", __name__)
 def home():
     weekly_graph = Todo.percentage_weekly()
     daily_graph = Todo().percentage()
-    print(daily_graph)
     return render_template(
         "dashboard.html",
         weekly_graph_percentage=weekly_graph["percentage"],
