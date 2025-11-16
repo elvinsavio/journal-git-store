@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, Response, render_template, request
 
-from config import Config
+from config import config
 
 from .decorators import is_logged_in
 from .model import Status, Todo, _get_current_datetime
@@ -29,13 +29,13 @@ def login():
         login_key = request.form.get("login-key")
         if not login_key:
             return Response("Missing login key", status=200)
-        if login_key != Config.LOGIN_KEY:
+        if login_key != config.LOGIN_KEY:
             return Response("Invalid login key", status=200)
         resp = Response("ok")
         resp.headers["HX-Redirect"] = "/"
         resp.set_cookie(
             "_s_key",
-            Config.HASHED_LOGIN_KEY,
+            config.HASHED_LOGIN_KEY,
             httponly=True,
             samesite="Lax",
             max_age=3600,

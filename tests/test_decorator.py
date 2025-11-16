@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask
 
-from config import Config
+from config import config
 from core.decorators import is_logged_in
 
 
@@ -57,7 +57,7 @@ def test_redirects_htmx_when_bad_cookie(client):
 
 def test_allows_access_when_logged_in(client):
     # Set the correct hashed login key from Config
-    client.set_cookie("_s_key", Config.HASHED_LOGIN_KEY)
+    client.set_cookie("_s_key", config.HASHED_LOGIN_KEY)
     resp = client.get("/protected")
 
     assert resp.status_code == 200

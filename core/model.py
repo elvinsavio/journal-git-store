@@ -6,11 +6,11 @@ from typing import Optional
 
 from pytz import timezone
 
-from config import Config
+from config import config
 
 
 def _get_current_datetime() -> datetime:
-    tz = timezone(Config.TIMEZONE)
+    tz = timezone(config.TIMEZONE)
     return datetime.now(tz)
 
 
